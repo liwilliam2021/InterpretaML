@@ -39,7 +39,7 @@ async def obtener_tweets_relevantes():
     # Obtiene Tweets de las palabras clave candidatas
     tasks = [scrape(hashtag, ubicación) for hashtag in hashtags[: MAX_HASHTAGS + 1]]
     return await asyncio.gather(*tasks)
-    # TODO: WILL, generate more keywords from Tweets
+    # TODO: WILL, generate more keywords from Tweets + filter for false positives w/ GPT
 
 # TODO: WILL: if you fine-tune instead of in-context learning, you can do one-shot RAG
 resultas_scrape = asyncio.run(obtener_tweets_relevantes())
@@ -52,4 +52,4 @@ query = simple_RAG (tema, primera_consulta, texto_relevantes)
 
 print (query)
 
-# TODO: maybe do more cycles to get greater recall
+# TODO: WILL: maybe do more cycles to get greater recall

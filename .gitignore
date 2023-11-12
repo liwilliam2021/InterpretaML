@@ -5,3 +5,5 @@ venv/
 *pycache*/
 **/__pycache__/
 *.pyc
+db/
+IA/logs/

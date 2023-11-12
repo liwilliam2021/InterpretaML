@@ -15,14 +15,16 @@ GPT_MODELO = "gpt-4" if USA_GPT4 else "gpt-3.5-turbo"
 openai.api_key = API_KEY
 
 def hacer_GPT_prompt_sin_RAG (tema, keywords):
+    # TODO: WILL: improve prompt w/ GPT
     todo_ejemplos = '\n\n'.join (['Una consulta de ejemplo para el tema de ' + q[0] + ' es : ' + q[1] for q in Q_EJEMPLOS.items()])
     keyword_ejemplos = '' if not keywords else ('Asegúrese de incluir los siguientes hashtags y palabras clave en su consulta: ' + ','.join (keywords))
     system_prompt = f"""Quiero hacer un query con un algoritmo booleano para consultar Tweets sobre un tema específico. Quiero que el query contenga una amplia gama de puntos de vista, perspectivas, hashtags y datos demográficos.
-    Puede usa estas operaciones booleanas AND, NOT, OR, (). A veces, puede usar NEAR/n como un operador de proximidad que incluye frases dentro de n palabras.
+    Puede usa estas operaciones booleanas AND, NOT, OR, (). En general, en lugar de frases exactas encerradas en "", debe usar NEAR/n como un operador de proximidad que incluye todos frases dentro de n palabras.
     Debes usar el regex *, (por ejemplo: aprobad*), si el final de una palabra es flexible. Debes usar ?, (por ejemplo: rid?culo), si la letra es flexible.
-    Separe la consulta en secciones y etiquete cada una. Coloque las etiquetas entre <<< y >>>. {keyword_ejemplos} Aquí hay unos ejemplos.
+    Separe el query en secciones y etiquete cada una. Coloque las etiquetas entre <<< y >>>. 
+    Prioriza la minimización de falsos positivos.Por ejemplo: si está buscando Tweets sobre migrantes, el frase (OR "extranjer?") es demasiado amplio porque hay empresas extranjeras, universidades extranjeras, etc. Trata ser específico.
+    {keyword_ejemplos} Aquí hay unos ejemplos.
     \n""" +  todo_ejemplos
-    print (system_prompt)
     user_prompt = f'Generas una consulta para el tema de {tema}.'
 
     prompt = [{

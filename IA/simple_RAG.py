@@ -17,9 +17,10 @@ def simple_RAG (tema, query, ejemplos):
     print ('Mejorando el query')
     system_prompt = f"""Estoy llevando a cabo un análisis sobre el discurso público en torno a {tema}. El query actual que tengo captura un alcance básico de los tweets relacionados con el tema, pero quiero refinarla para abarcar un conjunto de tweets más amplio y diverso que refleje diferentes puntos de vista, hashtags y demográficos. Adjunto los parámetros del query existente y un conjunto tweets de muestra. 
     No corta el query actual. Incluye las cláusulas booleanas originales y sólo agrega complejidad. Responde solo con el query nuevo, nada más. 
-    Puede usa estas operaciones booleanas AND, NOT, OR, (). A veces, puede usar NEAR/n como un operador de proximidad que incluye frases dentro de n palabras.
+    Puede usa estas operaciones booleanas AND, NOT, OR, (). En general, en lugar de frases exactas encerradas en "", debe usar NEAR/n como un operador de proximidad que incluye todos frases dentro de n palabras.
     Debes usar el regex *, (por ejemplo: aprobad*), si el final de una palabra es flexible. Debes usar ?, (por ejemplo: rid?culo), si la letra es flexible.
-    Separe la consulta en secciones y etiquete cada una. Coloque las etiquetas entre <<< y >>>."""
+    Separe el query en secciones y etiquete cada una. Coloque las etiquetas entre <<< y >>>. 
+    Prioriza la minimización de falsos positivos. Por ejemplo: si está buscando Tweets sobre migrantes, el frase (OR "extranjer?") es demasiado amplio porque hay empresas extranjeras, universidades extranjeras, etc. Trata ser específico."""
     user_prompt = f'Aquí está el query:\n {query} \n\n Aquí están los tweet:\n {ejemplos}'
 
     prompt = [ {
