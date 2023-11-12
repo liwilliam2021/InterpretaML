@@ -14,13 +14,15 @@ USA_GPT4 = True
 GPT_MODELO = "gpt-4" if USA_GPT4 else "gpt-3.5-turbo"
 openai.api_key = API_KEY
 
-def hacer_GPT_prompt_sin_RAG (tema):
+def hacer_GPT_prompt_sin_RAG (tema, keywords):
     todo_ejemplos = '\n\n'.join (['Una consulta de ejemplo para el tema de ' + q[0] + ' es : ' + q[1] for q in Q_EJEMPLOS.items()])
-    system_prompt = """Quiero hacer un query con un algoritmo booleano para consultar Tweets sobre un tema específico. Quiero que el query contenga una amplia gama de puntos de vista, perspectivas, hashtags y datos demográficos.
-                    Puede usa estas operaciones booleanas AND, NOT, OR, (). A veces, puede usar NEAR/n como un operador de proximidad que incluye frases dentro de n palabras.
-                    Debes usar el regex *, (por ejemplo: aprobad*), si el final de una palabra es flexible. Debes usar ?, (por ejemplo: rid?culo), si la letra es flexible.
-                    Separe la consulta en secciones y etiquete cada una. Coloque las etiquetas entre <<< y >>>. Aquí hay unos ejemplos.
-                    \n""" +  todo_ejemplos
+    keyword_ejemplos = '' if not keywords else ('Asegúrese de incluir los siguientes hashtags y palabras clave en su consulta: ' + ','.join (keywords))
+    system_prompt = f"""Quiero hacer un query con un algoritmo booleano para consultar Tweets sobre un tema específico. Quiero que el query contenga una amplia gama de puntos de vista, perspectivas, hashtags y datos demográficos.
+    Puede usa estas operaciones booleanas AND, NOT, OR, (). A veces, puede usar NEAR/n como un operador de proximidad que incluye frases dentro de n palabras.
+    Debes usar el regex *, (por ejemplo: aprobad*), si el final de una palabra es flexible. Debes usar ?, (por ejemplo: rid?culo), si la letra es flexible.
+    Separe la consulta en secciones y etiquete cada una. Coloque las etiquetas entre <<< y >>>. {keyword_ejemplos} Aquí hay unos ejemplos.
+    \n""" +  todo_ejemplos
+    print (system_prompt)
     user_prompt = f'Generas una consulta para el tema de {tema}.'
 
     prompt = [{
@@ -32,14 +34,14 @@ def hacer_GPT_prompt_sin_RAG (tema):
     }]
     return prompt
 
-def generar_primera_consulta (tema):
+def generar_primera_consulta (tema, keywords):
     """Generar la primera consulta con 'in-context learning' sin datos de Twitter"""
     print ('Generando la primera consulta')
 
     # Pregunta GPT con ejemplos
     result = openai.ChatCompletion.create(
                 model=GPT_MODELO,
-                messages= hacer_GPT_prompt_sin_RAG (tema),
+                messages= hacer_GPT_prompt_sin_RAG (tema, keywords),
                 temperature=0.7
             )
     response = result['choices'][0]['message']['content']

@@ -1,5 +1,5 @@
 # Twint no funciona
-# TODO: (WILL) use second account to try tweepy for location data
+# TODO: (WILL) add tweepy for more efficient scraping
 
 import asyncio
 from datetime import date, timedelta, datetime
@@ -9,8 +9,9 @@ from twscrape import API, gather
 from twscrape.logger import set_log_level
 
 MESES = 6
+API_LIMITA = 2
 
-async def scrape(tema):
+async def scrape(tema, ubicación):
     api = API()
 
     # agrega cuentas
@@ -30,14 +31,13 @@ async def scrape(tema):
     q = f"{tema} since:{inicio} until:{hoy}"
     print (q)
     resultas = []
-    async for tweet in api.search(q, limit=2):
+    async for tweet in api.search(q, limit=API_LIMITA):
         # rep es httpx.Response object
         # print(rep.status_code, rep.json())
         """Preocupación potencial: todos los tweets más recientes son del mismo bot
         """
         # Comprobar la relevancia de la ubicación
-        if ('Chile' in tweet.rawContent or 'Chile' in tweet.user.location 
-            or 'chile' in tweet.rawContent or 'chile' in tweet.user.location):
+        if (ubicación.upper() in tweet.rawContent.upper() or ubicación.upper() in tweet.user.location.upper()):
             resultas.append ((tweet.id, tweet.user.username, tweet.rawContent))
     
     now = datetime.now()

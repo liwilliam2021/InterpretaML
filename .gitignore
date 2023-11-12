@@ -2,3 +2,6 @@ secret_key.py
 accounts.db
 venv/
 .DS_S*
+*pycache*/
+**/__pycache__/
+*.pyc
